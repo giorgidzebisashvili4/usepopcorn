@@ -94,9 +94,10 @@ export default function App() {
 
           setMovies(data.Search);
         } catch (err) {
-          console.error(err.message);
-
-          if (err.name !== "AbortError") setError(err.message);
+          if (err.name !== "AbortError") {
+            console.log(err.message);
+            setError(err.message);
+          }
         } finally {
           setIsLoading(false);
         }
@@ -107,6 +108,7 @@ export default function App() {
         setError("");
         return;
       }
+      handleCloseMovie();
       fetchMovies();
 
       return () => controller.abort();
@@ -291,6 +293,15 @@ function MovieDetails({ selectedId, onCloseMovie, onAddToWatched, watched }) {
   } = movie;
 
   // console.log(title, year);
+
+  useEffect(() => {
+    function callback(e) {
+      if (e.key === "Escape") onCloseMovie();
+    }
+    document.addEventListener("keydown", callback);
+
+    return () => document.removeEventListener("keydown", callback);
+  }, [onCloseMovie]);
 
   function handleAdd() {
     const newWatchedMovie = {
