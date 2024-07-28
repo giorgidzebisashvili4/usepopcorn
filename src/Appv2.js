@@ -58,7 +58,7 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [selectedId, setSelectedId] = useState("tt0816692");
+  const [selectedId, setSelectedId] = useState("");
 
   function handleSelectedId(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -316,6 +316,11 @@ function MovieDetails({ selectedId, onCloseMovie, onAddToWatched, watched }) {
     },
     [selectedId]
   );
+
+  useEffect(() => {
+    if (!title) return;
+    document.title = `Movie | ${title}`;
+  }, [title]);
 
   return (
     <div className="details">
