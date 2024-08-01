@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import StarRating from "./StarRating";
 import { useMovies } from "./useMovies";
+import { useLocalStorageState } from "./useLocalStorageState";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -9,16 +10,10 @@ const key = "80bc958d";
 export default function App() {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState("");
-  const { movies, isLoading, error } = useMovies(query, handleCloseMovie);
+  const { movies, isLoading, error } = useMovies(query);
   // const [watched, setWatched] = useState([]);
 
-  // Fetch watched movies from local storage on component initialization
-  // and store them in the 'watched' state variable.
-  // If no watched movies are found, an empty array is returned.
-  const [watched, setWatched] = useState(function () {
-    const storedValue = JSON.parse(localStorage.getItem("watched")) || [];
-    return storedValue;
-  });
+  const [watched, setWatched] = useLocalStorageState([], "watched");
 
   function handleSelectedId(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -36,11 +31,6 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-
-  // Store the watched movies in local storage whenever the watched state changes
-  useEffect(() => {
-    localStorage.setItem("watched", JSON.stringify(watched));
-  }, [watched]);
 
   return (
     <>
