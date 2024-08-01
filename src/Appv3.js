@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import StarRating from "./StarRating";
 import { useMovies } from "./useMovies";
 import { useLocalStorageState } from "./useLocalStorageState";
+import { useKey } from "./useKey";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -102,20 +103,14 @@ function Logo() {
 }
 function Search({ query, setQuery }) {
   const inputEl = useRef(null);
-  useEffect(() => {
-    function callback(e) {
-      if (document.activeElement === inputEl.current) {
-        return;
-      }
-      if (e.key === "Enter") {
-        inputEl.current.focus();
-        setQuery("");
-      }
-    }
 
-    document.addEventListener("keydown", callback);
-    return () => document.removeEventListener("keydown", callback);
-  }, [setQuery]);
+  useKey("Enter", () => {
+    if (document.activeElement === inputEl.current) {
+      return;
+    }
+    inputEl.current.focus();
+    setQuery("");
+  });
 
   return (
     <input
@@ -232,16 +227,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddToWatched, watched }) {
   } = movie;
 
   // console.log(title, year);
-
-  useEffect(() => {
-    function callback(e) {
-      if (e.key === "Escape") onCloseMovie();
-    }
-    document.addEventListener("keydown", callback);
-
-    return () => document.removeEventListener("keydown", callback);
-  }, [onCloseMovie]);
-
+  useKey("Escape", onCloseMovie);
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
