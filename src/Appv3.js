@@ -154,7 +154,7 @@ function Logo() {
   );
 }
 function Search({ query, setQuery }) {
-  const inputEl = useRef();
+  const inputEl = useRef(null);
   useEffect(() => {
     function callback(e) {
       if (document.activeElement === inputEl.current) {
@@ -168,7 +168,7 @@ function Search({ query, setQuery }) {
 
     document.addEventListener("keydown", callback);
     return () => document.removeEventListener("keydown", callback);
-  }, []);
+  }, [setQuery]);
 
   return (
     <input
@@ -260,6 +260,12 @@ function MovieDetails({ selectedId, onCloseMovie, onAddToWatched, watched }) {
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState(0);
 
+  const countRef = useRef(0);
+
+  useEffect(() => {
+    if (userRating) countRef.current += 1;
+  }, [userRating]);
+
   const isWatched = watched.some((movie) => movie.imdbID === selectedId);
   const watchedUserRating = watched.find(
     (movie) => movie.imdbID === selectedId
@@ -298,6 +304,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddToWatched, watched }) {
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
       userRating: Number(userRating),
+      countRatingDecisions: countRef.current,
     };
     onAddToWatched(newWatchedMovie);
     onCloseMovie();
